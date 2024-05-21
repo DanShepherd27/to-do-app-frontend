@@ -12,6 +12,7 @@
   --active-primary-rgb: 152, 152, 237;
   --secondary-rgb: 45, 45, 45;
   --active-secondary-rgb: 60, 60, 60;
+  --error-rgb: 237, 31, 31;
 }
 
 * {
