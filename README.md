@@ -21,3 +21,5 @@ Open [http://localhost:4000](http://localhost:4000) with your browser to see the
 ## Notes
 
 Commit messages should be written according to: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+Styled using [Styled Components](https://styled-components.com/)
