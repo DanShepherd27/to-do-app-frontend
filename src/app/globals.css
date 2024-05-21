@@ -4,15 +4,21 @@
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  --default-font-size: 24px;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 214, 219, 220;
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 31, 31, 31;
+  --primary-rgb: 97, 97, 237;
+  --active-primary-rgb: 152, 152, 237;
+  --secondary-rgb: 45, 45, 45;
+  --active-secondary-rgb: 60, 60, 60;
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-size: var(--default-font-size);
 }
 
 html,
