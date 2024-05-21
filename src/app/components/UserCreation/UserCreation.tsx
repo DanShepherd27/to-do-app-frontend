@@ -23,7 +23,7 @@ export const UserCreation = () => {
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
   ) => {
-    console.log("Submitted." + values);
+    console.log("Submitted." + JSON.stringify(values));
     resetForm();
   };
 
@@ -42,7 +42,7 @@ export const UserCreation = () => {
                 id="username"
                 name="username"
                 placeholder="Your name"
-                autocomplete="off"
+                autoComplete="off"
               />
               <S.ErrorMessage name="username" component="div" />
             </S.Group>
