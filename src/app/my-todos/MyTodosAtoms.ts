@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { IconButton } from "@fluentui/react/lib/Button";
+import * as F from "formik";
 
 export const MyTodosWrapper = styled.main`
   display: flex;
@@ -44,18 +45,12 @@ export const TodoCard = styled.div`
   margin: 10px;
 `;
 
-export const TodoTitleInput = styled.input`
-  width: 98%;
-  max-width: 800px;
-  height: 50px;
-  background-color: rgb(var(--secondary-rgb));
-  color: rgb(var(--primary-rgb));
+export const Form = styled(F.Form)`
   display: flex;
-  padding: 13px 20px;
-  margin: 1%;
+  justify-content: center;
 `;
 
-export const Field = styled.input`
+export const Field = styled(F.Field)`
   position: absolute;
   bottom: 50px;
   width: calc(100% - 20px);
@@ -65,7 +60,7 @@ export const Field = styled.input`
   border-radius: 5px;
   background-color: rgb(var(--background-rgb));
   color: rgb(var(--primary-rgb));
-  padding: 0 10px;
+  padding: 0 20px;
 
   &:focus {
     outline: 3px solid rgb(var(--primary-rgb));

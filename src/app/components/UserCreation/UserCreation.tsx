@@ -34,7 +34,6 @@ export const UserCreation = () => {
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
   ) => {
-    console.log("Submitted." + JSON.stringify(values));
     const user = new User(values.username);
     cookies.set("user", JSON.stringify(user));
     api.createUser(user);
