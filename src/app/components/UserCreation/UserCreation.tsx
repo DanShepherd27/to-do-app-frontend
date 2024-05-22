@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import * as S from "./UserCreationAtoms";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
+import { useRouter } from "next/navigation";
+import { useCookies } from "next-client-cookies";
 
 interface FormValues {
   username: string;
@@ -19,12 +21,17 @@ const validationSchema = Yup.object({
 });
 
 export const UserCreation = () => {
+  const router = useRouter();
+  const cookies = useCookies();
+
   const handleSubmit = (
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
   ) => {
     console.log("Submitted." + JSON.stringify(values));
+    cookies.set("username", values.username);
     resetForm();
+    router.push("/my-todos");
   };
 
   return (
