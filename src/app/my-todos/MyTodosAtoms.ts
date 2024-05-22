@@ -16,6 +16,7 @@ export const FlexDiv = styled.div`
   width: 100%;
   max-height: 70vh;
   margin-bottom: 50px;
+  margin-top: 20px;
 `;
 
 export const MyTodosContainer = styled.div`

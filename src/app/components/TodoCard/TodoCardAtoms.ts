@@ -15,9 +15,18 @@ export const TodoCard = styled.div`
 export const TodoTitle = styled.div<{ $done: boolean }>`
   width: 100%;
   text-decoration: ${({ $done }) => ($done ? "line-through" : "")};
+  color: ${({ $done }) =>
+    $done ? "rgb(var(--active-secondary-rgb))" : "white"};
 `;
 
 export const Button = styled(IconButton)`
   height: 24px;
   width: 24px;
+  color: rgb(var(--primary-rgb));
+  border-radius: 5px;
+
+  &:hover {
+    background-color: rgb(var(--primary-rgb));
+    color: rgb(var(--secondary-rgb));
+  }
 `;
