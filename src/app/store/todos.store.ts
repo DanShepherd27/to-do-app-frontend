@@ -8,30 +8,19 @@ import { User } from "../models/User";
 
 export type TodosStore = {
   todos: Array<Todo>;
-  fetchTodos: () => Promise<void>;
+  fetchTodos: (userId: UUID) => Promise<void>;
   addTodo: (todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: UUID) => void;
-  syncTodos: () => void;
 };
 
 export const useTodosStore = create<TodosStore>((set, get) => ({
   todos: [],
-  fetchTodos: async () => {
+  fetchTodos: async (userId: UUID) => {
     try {
+      await api.getSyncData(userId);
       set({
-        todos: /**/ [
-          new Todo(uuidv4() as UUID, "mosogatás", false),
-          new Todo(uuidv4() as UUID, "takarítás", false),
-          new Todo(uuidv4() as UUID, "bevásárlás", false),
-          new Todo(uuidv4() as UUID, "evés", false),
-          new Todo(uuidv4() as UUID, "ivás", false),
-          new Todo(uuidv4() as UUID, "autószerelés", false),
-          new Todo(uuidv4() as UUID, "házi feladat", true),
-          new Todo(uuidv4() as UUID, "olvasás", true),
-          new Todo(uuidv4() as UUID, "5km futás", true),
-          new Todo(uuidv4() as UUID, "vasalás", true),
-        ],
+        todos: [],
       });
     } catch (e) {
       console.error("Failed to fetch todos." + e);
@@ -62,16 +51,6 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
       });
     } catch {
       console.error("Failed to delete todo.");
-    }
-  },
-  syncTodos: () => {
-    try {
-      // FIXME: get user from cookies
-      const user = new User("");
-      const syncData = new SyncData(user, get().todos);
-      api.postSyncData(syncData);
-    } catch {
-      console.error("Failed to sync todos.");
     }
   },
 }));

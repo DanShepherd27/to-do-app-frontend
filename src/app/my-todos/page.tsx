@@ -9,6 +9,8 @@ import * as Yup from "yup";
 import * as S from "./MyTodosAtoms";
 import { Todo } from "../models/Todo";
 import { User } from "../models/User";
+import * as api from "../../api/api";
+import { SyncData } from "../models/SyncData";
 
 interface FormValues {
   title: string;
@@ -31,20 +33,31 @@ export default function MyTodos() {
 
   const user = JSON.parse(cookies.get("user")!) as User;
 
-  const handleSubmit = (
+  useEffect(() => {
+    (async () => {
+      await fetchTodos(user.id);
+    })();
+  }, [fetchTodos, user]);
+
+  function handleSubmit(
     values: FormValues,
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
-  ) => {
+  ) {
     addTodo(new Todo(user.id, values.title, false));
     resetForm();
     setSubmitting(false);
-  };
+  }
 
-  useEffect(() => {
+  function handleSync() {
+    const syncData = new SyncData(user, todos);
     (async () => {
-      await fetchTodos();
+      try {
+        await api.postSyncData(syncData);
+      } catch {
+        console.error("Sync failed.");
+      }
     })();
-  }, [fetchTodos]);
+  }
 
   return (
     <S.MyTodosWrapper>
@@ -77,6 +90,12 @@ export default function MyTodos() {
               }
             }}
           >
+            <S.Button
+              onClick={handleSync}
+              iconProps={{ iconName: "Sync" }}
+              title="Sync to cloud"
+              ariaLabel="Sync to cloud"
+            />
             <S.Field
               id="title"
               name="title"

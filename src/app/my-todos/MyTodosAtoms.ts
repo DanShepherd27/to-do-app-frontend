@@ -66,3 +66,15 @@ export const Field = styled(F.Field)`
     outline: 3px solid rgb(var(--primary-rgb));
   }
 `;
+
+export const Button = styled(IconButton)`
+  height: 24px;
+  width: 24px;
+  color: rgb(var(--primary-rgb));
+  border-radius: 5px;
+
+  &:hover {
+    background-color: rgb(var(--primary-rgb));
+    color: rgb(var(--secondary-rgb));
+  }
+`;
