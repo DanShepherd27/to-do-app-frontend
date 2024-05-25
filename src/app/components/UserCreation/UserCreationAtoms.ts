@@ -36,8 +36,9 @@ export const Field = styled(F.Field)`
   width: 500px;
   max-width: 80%;
   height: 50px;
-  border: none;
-  background-color: white;
+  border: 1px solid rgb(var(--primary-rgb));
+  border-radius: 5px;
+  background-color: rgb(var(--background-rgb));
   color: rgb(var(--primary-rgb));
   padding: 0 10px;
 
