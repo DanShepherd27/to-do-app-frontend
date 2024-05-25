@@ -1,29 +1,30 @@
 import { create } from "zustand";
 import { Todo } from "../models/Todo";
 import { UUID } from "crypto";
-import { v4 as uuidv4 } from "uuid";
 import * as api from "../../api/api";
-import { SyncData } from "../models/SyncData";
-import { User } from "../models/User";
 
 export type TodosStore = {
   todos: Array<Todo>;
+  softDeletedTodos: Array<Todo>;
   fetchTodos: (userId: UUID) => Promise<void>;
   addTodo: (todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: UUID) => void;
+  softDeleteTodo: (todo: Todo) => void;
+  resetSoftDeleteTodos: () => void;
 };
 
 export const useTodosStore = create<TodosStore>((set, get) => ({
   todos: [],
+  softDeletedTodos: [],
   fetchTodos: async (userId: UUID) => {
     try {
-      await api.getSyncData(userId);
+      const todos = await api.getTodos(userId);
       set({
-        todos: [],
+        todos,
       });
     } catch (e) {
-      console.error("Failed to fetch todos." + e);
+      throw e;
     }
   },
   addTodo: (todo: Todo) => {
@@ -52,5 +53,20 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
     } catch {
       console.error("Failed to delete todo.");
     }
+  },
+  softDeleteTodo: (todo: Todo) => {
+    try {
+      set({
+        softDeletedTodos: [...get().softDeletedTodos, todo],
+        todos: get().todos.filter((x) => x.id !== todo.id),
+      });
+    } catch {
+      console.error("Failed to soft delete todo.");
+    }
+  },
+  resetSoftDeleteTodos: () => {
+    set({
+      softDeletedTodos: [],
+    });
   },
 }));

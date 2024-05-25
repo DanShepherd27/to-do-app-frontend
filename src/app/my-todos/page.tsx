@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCookies } from "next-client-cookies";
 import { TodoCard } from "../components/TodoCard/TodoCard";
 import { initializeIcons } from "@fluentui/font-icons-mdl2";
@@ -10,7 +10,8 @@ import * as S from "./MyTodosAtoms";
 import { Todo } from "../models/Todo";
 import { User } from "../models/User";
 import * as api from "../../api/api";
-import { SyncData } from "../models/SyncData";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormValues {
   title: string;
@@ -23,19 +24,35 @@ const validationSchema = Yup.object({
 });
 
 export default function MyTodos() {
-  const { todos, fetchTodos, addTodo } = useTodosStore();
+  const { todos, softDeletedTodos, fetchTodos, addTodo, resetSoftDeleteTodos } =
+    useTodosStore();
 
   useMemo(() => {
     initializeIcons();
   }, []);
 
   const cookies = useCookies();
+  const [user, setUser] = useState(new User(""));
 
-  const user = JSON.parse(cookies.get("user")!) as User;
+  useEffect(() => {
+    if (cookies.get("user")) {
+      setUser(JSON.parse(cookies.get("user")!));
+    }
+  }, [cookies]);
 
   useEffect(() => {
     (async () => {
-      await fetchTodos(user.id);
+      try {
+        if (user.username !== "") {
+          await fetchTodos(user.id);
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          toast.error(e.message);
+        } else {
+          toast.error("Unknown error.");
+        }
+      }
     })();
   }, [fetchTodos, user]);
 
@@ -43,18 +60,19 @@ export default function MyTodos() {
     values: FormValues,
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) {
-    addTodo(new Todo(user.id, values.title, false));
+    addTodo(new Todo(user, values.title, false));
     resetForm();
     setSubmitting(false);
   }
 
   function handleSync() {
-    const syncData = new SyncData(user, todos);
     (async () => {
       try {
-        await api.postSyncData(syncData);
+        await api.syncTodos(todos, softDeletedTodos);
+        toast.success("Sync successful.");
+        resetSoftDeleteTodos();
       } catch {
-        console.error("Sync failed.");
+        toast.error("Sync failed.");
       }
     })();
   }
@@ -85,7 +103,7 @@ export default function MyTodos() {
           <S.Form
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                e.preventDefault(); // Prevent default form submission behavior
+                e.preventDefault();
                 submitForm();
               }
             }}
@@ -105,6 +123,19 @@ export default function MyTodos() {
           </S.Form>
         )}
       </Formik>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme="dark"
+        transition={Bounce}
+      />
     </S.MyTodosWrapper>
   );
 }
