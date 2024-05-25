@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCookies } from "next-client-cookies";
 import { User } from "@/app/models/User";
 import * as api from "../../../api/api";
-import { toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface FormValues {
@@ -50,9 +50,9 @@ export const UserCreation = () => {
       router.push("/my-todos");
     } catch (e) {
       if (e instanceof Error) {
-        toast(e.message);
+        toast.error(e.message);
       } else {
-        toast("Unknown error.");
+        toast.error("Unknown error.");
       }
     }
   };
@@ -88,6 +88,19 @@ export const UserCreation = () => {
           </S.Form>
         )}
       </Formik>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme="dark"
+        transition={Bounce}
+      />
     </S.UserCreationWrapper>
   );
 };
