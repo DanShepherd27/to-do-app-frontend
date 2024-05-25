@@ -7,7 +7,7 @@ interface TodoProps {
 }
 
 export const TodoCard: React.FC<TodoProps> = ({ todo }) => {
-  const { deleteTodo, updateTodo } = useTodosStore();
+  const { softDeleteTodo, updateTodo } = useTodosStore();
 
   return (
     <S.TodoCard>
@@ -22,7 +22,7 @@ export const TodoCard: React.FC<TodoProps> = ({ todo }) => {
       )}
       {todo.done && (
         <S.Button
-          onClick={() => deleteTodo(todo.id)}
+          onClick={() => softDeleteTodo(todo)}
           iconProps={{ iconName: "Cancel" }}
           title="Delete"
           ariaLabel="Delete"

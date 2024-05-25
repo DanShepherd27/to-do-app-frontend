@@ -1,61 +1,99 @@
-import { SyncData } from "@/app/models/SyncData";
+import { Todo } from "@/app/models/Todo";
 import { User } from "@/app/models/User";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { UUID } from "crypto";
-import { cookies } from "next/headers";
 
-export async function postSyncData(syncData: SyncData) {
-  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
-    try {
-      const res = await axios.post(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/sync",
-        syncData
-      );
-    } catch (e: any) {
-      console.error("Sync failed." + e.message);
-    }
-  } else {
+// TODO ENDPOINTS
+
+export async function syncTodos(
+  changed: Todo[],
+  removed: Todo[]
+): Promise<void> {
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
     throw Error("Backend URL not set.");
+  }
+
+  try {
+    const response: AxiosResponse<void> = await axios.post(
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/todo",
+      { changed, removed }
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Request failed. Status code: " + response.status);
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error("Network error.");
+    } else {
+      throw new Error("Unexpected error");
+    }
   }
 }
 
-export async function getSyncData(userId: UUID) {
-  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
-    try {
-      const res = await axios.get(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/sync/" + userId
-      );
-      return res;
-    } catch (e: any) {
-      console.error("Fetching failed." + e.message);
-    }
-  } else {
+export async function getTodos(userId: UUID): Promise<Todo[]> {
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
     throw Error("Backend URL not set.");
+  }
+
+  try {
+    const response: AxiosResponse<Todo[]> = await axios.get(
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/todo?userId=" + userId
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.message);
+      throw new Error("Network error.");
+    } else {
+      throw new Error("Unexpected error");
+    }
   }
 }
 
-export async function createUser(user: User) {
-  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
-    try {
-      await axios.post(process.env.NEXT_PUBLIC_BACKEND_URL + "/user", user);
-    } catch {
-      console.error("Couldn't create user.");
-    }
-  } else {
+// USER ENDPOINTS
+
+export async function createOrUpdateUser(user: User): Promise<void> {
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
     throw Error("Backend URL not set.");
   }
-}
-export async function getUser(id: UUID) {
-  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
-    try {
-      const user = await axios.get(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/user/id?=" + id
-      );
-      return user;
-    } catch {
-      throw Error("User not found.");
+
+  try {
+    const response: AxiosResponse<void> = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/user`,
+      user
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Request failed. Status code: " + response.status);
     }
-  } else {
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error("Network error.");
+    } else {
+      throw new Error("Unexpected error");
+    }
+  }
+}
+
+export async function getUser(id: UUID): Promise<User> {
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
     throw Error("Backend URL not set.");
+  }
+
+  try {
+    const response: AxiosResponse<User> = await axios.get(
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/user?id=" + id
+    );
+    if (response.status !== 200) {
+      throw new Error("Request failed. Status code: " + response.status);
+    }
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error("Network error.");
+    } else {
+      throw new Error("Unexpected error");
+    }
   }
 }

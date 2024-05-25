@@ -27,6 +27,7 @@ export const MyTodosContainer = styled.div`
   border: 1px solid rgb(var(--secondary-rgb));
   width: calc(100% - 10px);
   max-width: 800px;
+  min-height: 55px;
   max-height: 30vh;
   overflow-y: scroll;
   overflow-x: hidden; /* Hide horizontal scrollbar */

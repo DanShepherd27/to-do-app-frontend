@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as S from "./UserCreationAtoms";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useCookies } from "next-client-cookies";
 import { User } from "@/app/models/User";
 import * as api from "../../../api/api";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormValues {
   username: string;
@@ -30,15 +32,29 @@ export const UserCreation = () => {
   const router = useRouter();
   const cookies = useCookies();
 
-  const handleSubmit = (
-    values: FormValues,
-    { resetForm }: FormikHelpers<FormValues>
-  ) => {
-    const user = new User(values.username);
-    cookies.set("user", JSON.stringify(user));
-    api.createUser(user);
-    resetForm();
-    router.push("/my-todos");
+  const [user, setUser] = useState(new User(""));
+
+  useEffect(() => {
+    if (cookies.get("user")) {
+      setUser(JSON.parse(cookies.get("user")!));
+    }
+  }, [cookies]);
+
+  const handleSubmit = async (values: FormValues) => {
+    const updatedUser = { ...user, username: values.username };
+    setUser(updatedUser);
+
+    try {
+      await api.createOrUpdateUser(updatedUser);
+      cookies.set("user", JSON.stringify(updatedUser));
+      router.push("/my-todos");
+    } catch (e) {
+      if (e instanceof Error) {
+        toast(e.message);
+      } else {
+        toast("Unknown error.");
+      }
+    }
   };
 
   return (
