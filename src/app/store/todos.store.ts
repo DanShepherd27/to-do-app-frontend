@@ -11,6 +11,7 @@ export type TodosStore = {
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: UUID) => void;
   softDeleteTodo: (todo: Todo) => void;
+  resetSoftDeleteTodos: () => void;
 };
 
 export const useTodosStore = create<TodosStore>((set, get) => ({
@@ -62,5 +63,10 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
     } catch {
       console.error("Failed to soft delete todo.");
     }
+  },
+  resetSoftDeleteTodos: () => {
+    set({
+      softDeletedTodos: [],
+    });
   },
 }));

@@ -24,7 +24,8 @@ const validationSchema = Yup.object({
 });
 
 export default function MyTodos() {
-  const { todos, softDeletedTodos, fetchTodos, addTodo } = useTodosStore();
+  const { todos, softDeletedTodos, fetchTodos, addTodo, resetSoftDeleteTodos } =
+    useTodosStore();
 
   useMemo(() => {
     initializeIcons();
@@ -69,6 +70,7 @@ export default function MyTodos() {
       try {
         await api.syncTodos(todos, softDeletedTodos);
         toast.success("Sync successful.");
+        resetSoftDeleteTodos();
       } catch {
         toast.error("Sync failed.");
       }
