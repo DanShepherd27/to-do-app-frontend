@@ -29,8 +29,11 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
   },
   addTodo: (todo: Todo) => {
     try {
+      const incremented = get().todos.map((item) => {
+        return { ...item, index: item.index++ };
+      });
       set({
-        todos: [...get().todos, todo],
+        todos: [...incremented, todo],
       });
     } catch {
       console.error("Failed to add todo.");
@@ -47,8 +50,14 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
   },
   deleteTodo: (id: UUID) => {
     try {
+      const todo = get().todos.find((t) => t.id === id)!;
+      const decremented = get().todos.map((item) => {
+        return item.index > todo.index
+          ? { ...item, index: item.index-- }
+          : item;
+      });
       set({
-        todos: get().todos.filter((x) => x.id !== id),
+        todos: decremented.filter((x) => x.id !== id),
       });
     } catch {
       console.error("Failed to delete todo.");
@@ -56,9 +65,14 @@ export const useTodosStore = create<TodosStore>((set, get) => ({
   },
   softDeleteTodo: (todo: Todo) => {
     try {
+      const decremented = get().todos.map((item) => {
+        return item.index > todo.index
+          ? { ...item, index: item.index-- }
+          : item;
+      });
       set({
         softDeletedTodos: [...get().softDeletedTodos, todo],
-        todos: get().todos.filter((x) => x.id !== todo.id),
+        todos: decremented.filter((x) => x.id !== todo.id),
       });
     } catch {
       console.error("Failed to soft delete todo.");

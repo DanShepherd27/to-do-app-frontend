@@ -42,7 +42,7 @@ export default function MyTodos() {
     values: FormValues,
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) {
-    addTodo(new Todo(user, values.title, false));
+    addTodo(new Todo(user, values.title, false, 0));
     resetForm();
     setSubmitting(false);
   }

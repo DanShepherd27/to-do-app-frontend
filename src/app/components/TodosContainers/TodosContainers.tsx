@@ -47,8 +47,12 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
   }, [fetchTodos, user]);
 
   useEffect(() => {
-    setPending(todos.filter((todo) => !todo.done));
-    setDone(todos.filter((todo) => todo.done));
+    setPending(
+      todos.filter((todo) => !todo.done).sort((a, b) => a.index - b.index)
+    );
+    setDone(
+      todos.filter((todo) => todo.done).sort((a, b) => a.index - b.index)
+    );
   }, [todos]);
 
   const getPendingPos = (id: UniqueIdentifier) =>
@@ -81,7 +85,13 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
             const newIndex = items.indexOf(
               pending.find((p) => p.id === overId)!
             );
-            return arrayMove(items, oldIndex, newIndex);
+            const newArray = arrayMove(items, oldIndex, newIndex);
+
+            for (let i = 0; i < newArray.length; i++) {
+              newArray[i].index = i;
+            }
+
+            return newArray;
           });
         } else {
           setDone((items) => {
@@ -89,7 +99,13 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
               done.find((p) => p.id === active.id)!
             );
             const newIndex = items.indexOf(done.find((p) => p.id === overId)!);
-            return arrayMove(items, oldIndex, newIndex);
+            const newArray = arrayMove(items, oldIndex, newIndex);
+
+            for (let i = 0; i < newArray.length; i++) {
+              newArray[i].index = i;
+            }
+
+            return newArray;
           });
         }
       }
@@ -98,12 +114,36 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
       const item = todos.find((item) => item.id === active.id)!;
       if (activeContainer === "Pending") {
         item.done = true;
-        setPending((items) => items.filter((item) => item.id !== active.id));
-        setDone((items) => [...items, item]);
+        setPending((items) => {
+          const newArray = items.filter((item) => item.id !== active.id);
+          for (let i = 0; i < newArray.length; i++) {
+            newArray[i].index = i;
+          }
+          return newArray;
+        });
+        setDone((items) => {
+          const newArray = [...items, item];
+          for (let i = 0; i < newArray.length; i++) {
+            newArray[i].index = i;
+          }
+          return newArray;
+        });
       } else {
         item.done = false;
-        setDone((items) => items.filter((item) => item.id !== active.id));
-        setPending((items) => [...items, item]);
+        setDone((items) => {
+          const newArray = items.filter((item) => item.id !== active.id);
+          for (let i = 0; i < newArray.length; i++) {
+            newArray[i].index = i;
+          }
+          return newArray;
+        });
+        setPending((items) => {
+          const newArray = [...items, item];
+          for (let i = 0; i < newArray.length; i++) {
+            newArray[i].index = i;
+          }
+          return newArray;
+        });
       }
     }
   };
