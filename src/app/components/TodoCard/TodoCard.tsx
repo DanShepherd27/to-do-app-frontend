@@ -17,9 +17,11 @@ export const TodoCard: React.FC<TodoProps> = ({ todo }) => {
   const style = { transition, transform: CSS.Transform.toString(transform) };
 
   return (
-    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+    <div ref={setNodeRef} style={style}>
       <S.TodoCard>
-        <S.TodoTitle $done={todo.done}>{todo.title}</S.TodoTitle>
+        <S.DragHandle {...attributes} {...listeners}>
+          <S.TodoTitle $done={todo.done}>{todo.title}</S.TodoTitle>
+        </S.DragHandle>
         {!todo.done && (
           <S.Button
             onClick={() => {

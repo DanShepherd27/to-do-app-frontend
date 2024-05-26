@@ -8,11 +8,11 @@ export const TodoCard = styled.div`
   background-color: rgb(var(--secondary-rgb));
   color: rgb(var(--primary-rgb));
   display: flex;
-  padding: 13px 20px;
   margin: 1%;
 `;
 
 export const TodoTitle = styled.div<{ $done: boolean }>`
+  padding-left: 20px;
   width: 100%;
   text-decoration: ${({ $done }) => ($done ? "line-through" : "")};
   color: ${({ $done }) =>
@@ -22,6 +22,8 @@ export const TodoTitle = styled.div<{ $done: boolean }>`
 export const Button = styled(IconButton)`
   height: 24px;
   width: 24px;
+  margin-top: 13px;
+  margin-right: 20px;
   color: rgb(var(--primary-rgb));
   border-radius: 5px;
 
@@ -29,4 +31,11 @@ export const Button = styled(IconButton)`
     background-color: rgb(var(--primary-rgb));
     color: rgb(var(--secondary-rgb));
   }
+`;
+
+export const DragHandle = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 `;

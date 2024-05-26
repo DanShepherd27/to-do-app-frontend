@@ -59,35 +59,49 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
     const overId = over?.id;
     if (overId == null || active.id === overId) return;
 
-    const activeContainerId = active?.data?.current?.sortable.containerId;
-    const overContainerId = over?.data?.current?.sortable.containerId;
+    const activeContainer = active?.data?.current?.sortable.containerId;
+    const overContainer = over?.data?.current?.sortable.containerId;
 
-    if (activeContainerId === overContainerId) {
-      if (overContainerId === "Sortable-0") {
-        setPending(() => {
-          const originalPos = getPendingPos(active.id);
-          const newPos = getPendingPos(overId);
-          return arrayMove(pending, originalPos, newPos);
-        });
+    if (activeContainer === overContainer) {
+      // If items are being moved within the same container
+      if (active.id !== overId) {
+        if (activeContainer === "Pending") {
+          setPending((items) => {
+            const oldIndex = items.indexOf(
+              pending.find((p) => p.id === active.id)!
+            );
+            const newIndex = items.indexOf(
+              pending.find((p) => p.id === overId)!
+            );
+            return arrayMove(items, oldIndex, newIndex);
+          });
+        } else {
+          setDone((items) => {
+            const oldIndex = items.indexOf(
+              done.find((p) => p.id === active.id)!
+            );
+            const newIndex = items.indexOf(done.find((p) => p.id === overId)!);
+            return arrayMove(items, oldIndex, newIndex);
+          });
+        }
       }
+    } else {
+      // If items are being moved between different containers
 
-      if (overContainerId === "Sortable-1") {
-        setDone(() => {
-          const originalPos = getDonePos(active.id);
-          const newPos = getDonePos(overId);
-          return arrayMove(done, originalPos, newPos);
-        });
+      const item = todos.find((item) => item.id === active.id)!;
+      if (activeContainer === "Pending") {
+        item.done = true;
+        setPending((items) => items.filter((item) => item.id !== active.id));
+        setDone((items) => [...items, item]);
+      } else {
+        item.done = false;
+        setDone((items) => items.filter((item) => item.id !== active.id));
+        setPending((items) => [...items, item]);
       }
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    const overId = over?.id;
-    if (overId == null || active.id === overId) return;
-    console.log(event.active);
-    console.log(event.over);
-  };
+  const handleDragOver = (event: DragOverEvent) => {};
 
   return (
     <DndContext
@@ -96,14 +110,22 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
       onDragOver={handleDragOver}
     >
       <S.TodosContainer>
-        <SortableContext items={pending} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={pending}
+          strategy={verticalListSortingStrategy}
+          id="Pending"
+        >
           {pending.map((todo) => (
             <TodoCard key={todo.id} todo={todo} />
           ))}
         </SortableContext>
       </S.TodosContainer>
       <S.TodosContainer>
-        <SortableContext items={done} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={done}
+          strategy={verticalListSortingStrategy}
+          id="Done"
+        >
           {done.map((todo) => (
             <TodoCard key={todo.id} todo={todo} />
           ))}
