@@ -1,14 +1,22 @@
 import styled from "styled-components";
 import { IconButton } from "@fluentui/react/lib/Button";
 
-export const TodoCard = styled.div`
+export const TodoCard = styled.div<{
+  $placeholder: boolean;
+  $dragOverlay?: boolean;
+}>`
   width: 98%;
   height: 50px;
   border-radius: 5px;
-  background-color: rgb(var(--secondary-rgb));
+  background-color: rgba(
+    var(--secondary-rgb),
+    ${({ $placeholder }) => ($placeholder ? 0.2 : 1)}
+  );
   color: rgb(var(--primary-rgb));
   display: flex;
   margin: 1%;
+  border: ${({ $dragOverlay }) =>
+    $dragOverlay ? "1px solid rgb(var(--primary-rgb))" : "none"};
 `;
 
 export const TodoTitle = styled.div<{ $done: boolean }>`

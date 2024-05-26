@@ -7,9 +7,15 @@ import { UUID } from "crypto";
 
 interface TodoProps {
   todo: Todo;
+  placeholder?: boolean;
+  dragOverlay?: boolean;
 }
 
-export const TodoCard: React.FC<TodoProps> = ({ todo }) => {
+export const TodoCard: React.FC<TodoProps> = ({
+  todo,
+  placeholder,
+  dragOverlay,
+}) => {
   const { softDeleteTodo, updateTodo } = useTodosStore();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: todo.id });
@@ -18,7 +24,10 @@ export const TodoCard: React.FC<TodoProps> = ({ todo }) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <S.TodoCard>
+      <S.TodoCard
+        $placeholder={placeholder ?? false}
+        $dragOverlay={dragOverlay}
+      >
         <S.DragHandle {...attributes} {...listeners}>
           <S.TodoTitle $done={todo.done}>{todo.title}</S.TodoTitle>
         </S.DragHandle>

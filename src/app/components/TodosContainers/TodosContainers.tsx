@@ -1,13 +1,15 @@
 import { Todo } from "@/app/models/Todo";
 import * as S from "./TodosContainersAtoms";
 import { useTodosStore } from "../../store/todos.store";
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { User } from "@/app/models/User";
 import { toast } from "react-toastify";
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
   UniqueIdentifier,
   closestCenter,
 } from "@dnd-kit/core";
@@ -26,6 +28,7 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
   const { todos, fetchTodos } = useTodosStore();
   const [pending, setPending] = useState<Todo[]>([]);
   const [done, setDone] = useState<Todo[]>([]);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -54,8 +57,13 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
   const getDonePos = (id: UniqueIdentifier) =>
     done.findIndex((todo) => todo.id === id);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveId(null);
     const overId = over?.id;
     if (overId == null || active.id === overId) return;
 
@@ -87,7 +95,6 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
       }
     } else {
       // If items are being moved between different containers
-
       const item = todos.find((item) => item.id === active.id)!;
       if (activeContainer === "Pending") {
         item.done = true;
@@ -101,13 +108,19 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
     }
   };
 
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
+
   const handleDragOver = (event: DragOverEvent) => {};
 
   return (
     <DndContext
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
+      onDragCancel={handleDragCancel}
     >
       <S.TodosContainer>
         <SortableContext
@@ -116,7 +129,11 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
           id="Pending"
         >
           {pending.map((todo) => (
-            <TodoCard key={todo.id} todo={todo} />
+            <TodoCard
+              key={todo.id}
+              todo={todo}
+              placeholder={todo.id === activeId}
+            />
           ))}
         </SortableContext>
       </S.TodosContainer>
@@ -131,6 +148,14 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
           ))}
         </SortableContext>
       </S.TodosContainer>
+      <DragOverlay>
+        {activeId ? (
+          <TodoCard
+            todo={todos.find((t) => t.id === activeId)!}
+            dragOverlay={true}
+          />
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };
