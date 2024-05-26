@@ -19,6 +19,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { TodoCard } from "../TodoCard/TodoCard";
+import { v4 as uuidv4 } from "uuid";
+import { UUID } from "crypto";
 
 interface TodosContainerProps {
   user: User;
@@ -29,6 +31,8 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
   const [pending, setPending] = useState<Todo[]>([]);
   const [done, setDone] = useState<Todo[]>([]);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [transferOverContainer, setTransferOverContainer] =
+    useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -152,7 +156,20 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
     setActiveId(null);
   };
 
-  const handleDragOver = (event: DragOverEvent) => {};
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+
+    if (
+      active?.data?.current?.sortable.containerId !==
+      over?.data?.current?.sortable.containerId
+    ) {
+      setTransferOverContainer(over?.data?.current?.sortable.containerId);
+    } else {
+      setTransferOverContainer(null);
+    }
+    console.log(event);
+    setActiveId(active.id);
+  };
 
   return (
     <DndContext
@@ -175,6 +192,17 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
               placeholder={todo.id === activeId}
             />
           ))}
+          {activeId &&
+            (pending.length === 0 || transferOverContainer === "Pending") && (
+              <TodoCard
+                key="placeholder-card-pending"
+                todo={{
+                  ...todos.find((t) => t.id === activeId)!,
+                  id: uuidv4() as UUID,
+                }}
+                placeholder={true}
+              />
+            )}
         </SortableContext>
       </S.TodosContainer>
       <S.TodosContainer>
@@ -186,15 +214,26 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
           {done.map((todo) => (
             <TodoCard key={todo.id} todo={todo} />
           ))}
+          {activeId &&
+            (done.length === 0 || transferOverContainer === "Done") && (
+              <TodoCard
+                key="placeholder-card-done"
+                todo={{
+                  ...todos.find((t) => t.id === activeId)!,
+                  id: uuidv4() as UUID,
+                }}
+                placeholder={true}
+              />
+            )}
         </SortableContext>
       </S.TodosContainer>
       <DragOverlay>
-        {activeId ? (
+        {activeId && (
           <TodoCard
             todo={todos.find((t) => t.id === activeId)!}
             dragOverlay={true}
           />
-        ) : null}
+        )}
       </DragOverlay>
     </DndContext>
   );
