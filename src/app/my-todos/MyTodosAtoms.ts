@@ -20,21 +20,6 @@ export const FlexDiv = styled.div`
   margin-top: 20px;
 `;
 
-export const MyTodosContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  border: 1px solid rgb(var(--secondary-rgb));
-  width: calc(100% - 10px);
-  max-width: 800px;
-  min-height: 55px;
-  max-height: 30vh;
-  overflow-y: scroll;
-  overflow-x: hidden; /* Hide horizontal scrollbar */
-  scrollbar-width: none;
-  margin-bottom: 10px;
-`;
-
 export const TodoCard = styled.div`
   width: calc(100% - 20px);
   height: 50px;

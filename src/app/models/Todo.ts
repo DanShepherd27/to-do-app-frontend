@@ -7,11 +7,19 @@ export class Todo {
   user: User;
   title: string;
   done: boolean;
+  index: number;
 
-  constructor(user: User, title: string, done: boolean, id?: UUID) {
+  constructor(
+    user: User,
+    title: string,
+    done: boolean,
+    index: number,
+    id?: UUID
+  ) {
     this.user = user;
     this.title = title;
     this.done = done;
+    this.index = index;
     this.id = id ?? (uuidv4() as UUID);
   }
 }
