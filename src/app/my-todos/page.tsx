@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "next-client-cookies";
-import { TodoCard } from "../components/TodoCard/TodoCard";
 import { initializeIcons } from "@fluentui/font-icons-mdl2";
 import { useTodosStore } from "../store/todos.store";
-import { Form, Formik, FormikHelpers } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import * as S from "./MyTodosAtoms";
 import { Todo } from "../models/Todo";
@@ -12,6 +11,9 @@ import { User } from "../models/User";
 import * as api from "../../api/api";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TodosContainers } from "../components/TodosContainers/TodosContainers";
+
+initializeIcons();
 
 interface FormValues {
   title: string;
@@ -27,10 +29,6 @@ export default function MyTodos() {
   const { todos, softDeletedTodos, fetchTodos, addTodo, resetSoftDeleteTodos } =
     useTodosStore();
 
-  useMemo(() => {
-    initializeIcons();
-  }, []);
-
   const cookies = useCookies();
   const [user, setUser] = useState(new User(""));
 
@@ -39,22 +37,6 @@ export default function MyTodos() {
       setUser(JSON.parse(cookies.get("user")!));
     }
   }, [cookies]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        if (user.username !== "") {
-          await fetchTodos(user.id);
-        }
-      } catch (e) {
-        if (e instanceof Error) {
-          toast.error(e.message);
-        } else {
-          toast.error("Unknown error.");
-        }
-      }
-    })();
-  }, [fetchTodos, user]);
 
   function handleSubmit(
     values: FormValues,
@@ -81,18 +63,7 @@ export default function MyTodos() {
     <S.MyTodosWrapper>
       <S.FlexDiv>Hello, {user.username}!</S.FlexDiv>
       <S.FlexDiv>
-        <S.MyTodosContainer>
-          {todos &&
-            todos
-              .filter((todo) => !todo.done)
-              .map((todo) => <TodoCard key={todo.id} todo={todo} />)}
-        </S.MyTodosContainer>
-        <S.MyTodosContainer>
-          {todos &&
-            todos
-              .filter((todo) => todo.done)
-              .map((todo) => <TodoCard key={todo.id} todo={todo} />)}
-        </S.MyTodosContainer>
+        <TodosContainers user={user} />
       </S.FlexDiv>
       <Formik
         initialValues={inititalValues}
