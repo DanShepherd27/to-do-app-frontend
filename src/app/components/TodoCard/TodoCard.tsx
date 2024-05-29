@@ -3,7 +3,6 @@ import * as S from "./TodoCardAtoms";
 import { Todo } from "@/app/models/Todo";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { UUID } from "crypto";
 
 interface TodoProps {
   todo: Todo;

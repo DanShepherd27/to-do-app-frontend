@@ -67,6 +67,7 @@ export const TodosContainers = ({ user }: TodosContainerProps) => {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
+    setTransferOverContainer(null);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
